@@ -23,7 +23,7 @@ export class LiquidityToken extends Token {
 
   storeCacheCalls = [];
 
-  static fields () {
+  static fields() {
     return {
       ...super.fields(),
       // Relationship values
@@ -40,7 +40,7 @@ export class LiquidityToken extends Token {
     }
   }
 
-  get price () {
+  get price() {
     const firstPooledAmount = new BigNumber(this.firstTokenLiquidity).shiftedBy(-this.firstToken.decimals)
     const firstPooledValue = firstPooledAmount.multipliedBy(this.firstToken.price)
 
@@ -52,7 +52,7 @@ export class LiquidityToken extends Token {
     return firstPooledValue.plus(secondPooledValue).dividedBy(totalSupply).toPrecision(10)
   }
 
-  get pooled (): string {
+  get pooled(): string {
     const pools = Pool.query().where('tokenTicker', this.ticker).all()
     const pooledTokens = pools.reduce((accumulator: BigNumber, pool: Pool) => {
       const staked = new BigNumber(pool.tokenStaked)
@@ -62,7 +62,7 @@ export class LiquidityToken extends Token {
     return pooledTokens.toString()
   }
 
-  get totalPooled (): string {
+  get totalPooled(): string {
     const pools = Pool.query().where('tokenTicker', this.ticker).all()
     const totalPooledTokens = pools.reduce((accumulator: BigNumber, pool: Pool) => {
       const staked = new BigNumber(pool.tokenTotalStaked)

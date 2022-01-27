@@ -16,14 +16,21 @@
       </v-toolbar>
     </v-app-bar>
     <v-main>
-      <v-card v-if="expiredStakedPools.length > 0 && !onRecoverPage" class="vh-center">
+      <v-card
+        v-if="expiredStakedPools.length > 0 && !onRecoverPage"
+        class="vh-center"
+      >
         <div>
           <v-col class="my-3">
             <v-row class="mb-2">
               You have tokens staked into expired pools
             </v-row>
             <v-row class="vh-center">
-              <v-btn to="/recover" color="secondary" class="higher-yield-button">
+              <v-btn
+                to="/recover"
+                color="secondary"
+                class="higher-yield-button"
+              >
                 Recover tokens
               </v-btn>
             </v-row>
@@ -40,58 +47,54 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
-import Pool from '~/database/models/Pool'
-import WalletButton from '~/components/WalletButton.vue'
+import Pool from "~/database/models/Pool";
+import WalletButton from "~/components/WalletButton.vue";
 
 export default {
-  name: 'Default',
+  name: "Default",
   components: {
-    WalletButton
+    WalletButton,
   },
-  data () {
+  data() {
     return {
-      title: 'Vuetify.js'
-    }
+      title: "Vuetify.js",
+    };
   },
   computed: {
-    ...mapGetters('drizzle', ['isDrizzleInitialized']),
-
-    onRecoverPage () {
-      return this.$nuxt.$route.path === '/recover'
+    onRecoverPage() {
+      return this.$nuxt.$route.path === "/recover";
     },
-    expiredStakedPools () {
-      return Pool.getters('getExpiredStakedPools')
-    }
-  }
-}
+    expiredStakedPools() {
+      return Pool.getters("getExpiredStakedPools");
+    },
+  },
+};
 </script>
 
 <style scoped>
-  .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
 
-  .app {
-    font-family: Roboto;
-  }
+.app {
+  font-family: Roboto;
+}
 
-   .higher-yield-button {
-     animation: seesawShadow 2.5s ease-in-out infinite;
-   }
+.higher-yield-button {
+  animation: seesawShadow 2.5s ease-in-out infinite;
+}
 
-  @keyframes seesawShadow {
-    0% {
-      filter: drop-shadow(0px 0px 5px #790404);
-    }
-    50% {
-      filter: drop-shadow(0px 0px 20px #790404);
-    }
-    100% {
-      filter: drop-shadow(0px 0px 5px #790404);
-    }
+@keyframes seesawShadow {
+  0% {
+    filter: drop-shadow(0px 0px 5px #790404);
   }
+  50% {
+    filter: drop-shadow(0px 0px 20px #790404);
+  }
+  100% {
+    filter: drop-shadow(0px 0px 5px #790404);
+  }
+}
 </style>

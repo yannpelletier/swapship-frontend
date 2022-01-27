@@ -1,4 +1,4 @@
-# SWSH_frontend
+# swsh-frontend
 
 ## Build Setup
 

@@ -30,7 +30,7 @@ const prepareRefreshList = (refreshType: RefreshType) => {
 
 export default {
   actions: {
-    injectTokens (_: any) {
+    injectTokens(_: any) {
       LiquidityToken.insert({
         data: [
           ...Object.keys(liquidityTokenData).map((ticker) => {
@@ -44,24 +44,24 @@ export default {
       })
     },
 
-    async loadOnChainData (_: any, refreshType: RefreshType = RefreshType.Integral) {
+    async loadOnChainData(_: any, refreshType: RefreshType = RefreshType.Integral) {
       const refreshList: LiquidityToken[] = prepareRefreshList(refreshType)
       await Promise.all(refreshList.map(async (token: LiquidityToken) => {
         const tokenContract = this.$contracts[token.ticker]
 
         try {
           const results = await Promise.all([
-            tokenContract.methods.totalSupply().call(),
-            tokenContract.methods.getReserves().call()
+            tokenContract.totalSupply(),
+            tokenContract.getReserves()
           ])
 
           await Promise.all([
             LiquidityToken.update({
               data: {
                 ticker: token.ticker,
-                totalSupply: results[0],
-                firstTokenLiquidity: results[1]._reserve0,
-                secondTokenLiquidity: results[1]._reserve1,
+                totalSupply: results[0].toString(),
+                firstTokenLiquidity: results[1]._reserve0.toString(),
+                secondTokenLiquidity: results[1]._reserve1.toString(),
                 status: LoadingStatus.Loaded
               }
             })
@@ -79,9 +79,9 @@ export default {
       }))
     },
 
-    openLiquidityPoolPage (_: Context, token: LiquidityToken) {
-      const firstTokenSwapId = token.firstToken.swapIdType === SwapIdType.Contract ? this.$contracts[token.firstTokenTicker]._address : token.firstToken.ticker
-      const secondTokenSwapId = token.secondToken.swapIdType === SwapIdType.Contract ? this.$contracts[token.secondTokenTicker]._address : token.secondToken.ticker
+    openLiquidityPoolPage(_: Context, token: LiquidityToken) {
+      const firstTokenSwapId = token.firstToken.swapIdType === SwapIdType.Contract ? this.$contracts[token.firstTokenTicker].address : token.firstToken.ticker
+      const secondTokenSwapId = token.secondToken.swapIdType === SwapIdType.Contract ? this.$contracts[token.secondTokenTicker].address : token.secondToken.ticker
       window.open(`${token.exchange.link}${firstTokenSwapId}/${secondTokenSwapId}`, '_blank')
     }
   }

@@ -15,7 +15,7 @@ export class RegularToken extends Token {
   stable: boolean;
   ethPair: string;
 
-  static fields () {
+  static fields() {
     return {
       ...super.fields(),
       stable: this.boolean(false),
@@ -23,7 +23,7 @@ export class RegularToken extends Token {
     }
   }
 
-  get price () {
+  get price() {
     const USDTETHPair = LiquidityToken.query().with(['firstToken', 'secondToken']).find(Ticker.USDT_ETH_UNIV2)
     const ETHCount = new BigNumber(USDTETHPair.firstTokenLiquidity).shiftedBy(-USDTETHPair.firstToken.decimals)
     const USDTCount = new BigNumber(USDTETHPair.secondTokenLiquidity).shiftedBy(-USDTETHPair.secondToken.decimals)
@@ -45,22 +45,22 @@ export class RegularToken extends Token {
     }
   }
 
-  get image () {
+  get image() {
     return require(`~/static/tokens/${this.ticker.toLowerCase()}.png`)
   }
 
-  get claimable (): string {
+  get claimable(): string {
     const rewards = Reward.query().where('tokenTicker', this.ticker).all()
     return rewards.reduce((accumulator: BigNumber, reward: Reward) => {
       return accumulator.plus(reward.claimable)
     }, new BigNumber('0')).toString()
   }
 
-  get claimableValue (): string {
+  get claimableValue(): string {
     return new BigNumber(this.claimable).shiftedBy(-this.decimals).multipliedBy(this.price).toFixed(3)
   }
 
-  get pooled (): string {
+  get pooled(): string {
     const pools = Pool.query().where('tokenTicker', this.ticker).all()
     const pooledTokens = pools.reduce((accumulator: BigNumber, pool: Pool) => {
       const staked = new BigNumber(pool.tokenStaked)
@@ -84,11 +84,11 @@ export class RegularToken extends Token {
     return pooledTokens.plus(pooledFirstTokenPools).plus(pooledSecondTokenPools).toString()
   }
 
-  get pooledValue (): string {
+  get pooledValue(): string {
     return new BigNumber(this.pooled).shiftedBy(-this.decimals).multipliedBy(this.price).toFixed(3)
   }
 
-  get totalPooled (): string {
+  get totalPooled(): string {
     const pools = Pool.query().where('tokenTicker', this.ticker).all()
     const pooledTokens = pools.reduce((accumulator: BigNumber, pool: Pool) => {
       const staked = new BigNumber(pool.tokenTotalStaked)
@@ -112,11 +112,11 @@ export class RegularToken extends Token {
     return pooledTokens.plus(pooledFirstTokenPools).plus(pooledSecondTokenPools).toString()
   }
 
-  get totalPooledValue (): string {
+  get totalPooledValue(): string {
     return new BigNumber(this.totalPooled).shiftedBy(-this.decimals).multipliedBy(this.price).toFixed(3)
   }
 
-  get marketCap (): string {
+  get marketCap(): string {
     return new BigNumber(this.totalSupply).shiftedBy(-this.decimals).multipliedBy(this.price).toFixed(0)
   }
 }

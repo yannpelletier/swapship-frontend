@@ -27,7 +27,7 @@ export class Pool extends Model {
   token: Token;
   rewards: Reward[];
 
-  static fields () {
+  static fields() {
     return {
       // Pool properties
       pid: this.number(null),
@@ -50,11 +50,11 @@ export class Pool extends Model {
     }
   }
 
-  get isActive (): boolean {
+  get isActive(): boolean {
     return this.multiplier > 0
   }
 
-  get type (): string {
+  get type(): string {
     const token = Token.query().whereId(this.tokenTicker).first()
     if (token.type === TokenType.REGULAR) {
       return PoolType.VAULT
@@ -65,23 +65,23 @@ export class Pool extends Model {
   }
 
   // User staked value
-  get stakedValue () {
+  get stakedValue() {
     return new BigNumber(this.tokenStaked).shiftedBy(-this.token.decimals).multipliedBy(this.token.price).toFixed(3)
   }
 
   // Total pool staked value
-  get totalStakedValue () {
+  get totalStakedValue() {
     return new BigNumber(this.tokenTotalStaked).shiftedBy(-this.token.decimals).multipliedBy(this.token.price).toFixed(3)
   }
 
-  get claimableValue () {
+  get claimableValue() {
     const value = this.rewards.reduce((accumulator: BigNumber, reward: Reward) => {
       return accumulator.plus(reward.claimableValue)
     }, new BigNumber('0'))
     return value.toFixed(3)
   }
 
-  get dailyRewardsValue () {
+  get dailyRewardsValue() {
     const multiplierTotal = Pool.getters('getMultiplierTotal')
     const ratio = this.multiplier / multiplierTotal
 
@@ -91,16 +91,16 @@ export class Pool extends Model {
     return value.multipliedBy(ratio).toFixed(3)
   }
 
-  get apy () {
+  get apy() {
     return new BigNumber(this.dailyRewardsValue).dividedBy(this.totalStakedValue).multipliedBy(100).multipliedBy(365).toFixed(1)
   }
 
   // Flow Data
-  get isLoading () {
+  get isLoading() {
     return this.status === LoadingStatus.Loading || this.token.status === LoadingStatus.Loading
   }
 
-  get isError () {
+  get isError() {
     return this.status === LoadingStatus.Error || this.token.status === LoadingStatus.Error
   }
 }

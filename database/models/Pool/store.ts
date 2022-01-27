@@ -31,7 +31,7 @@ const prepareRefreshList = (refreshType: RefreshType) => {
 
 export default {
   actions: {
-    async injectPools () {
+    async injectPools() {
       await Promise.all([
         Pool.insert({
           data: poolData
@@ -55,9 +55,10 @@ export default {
       ])
     },
 
-    async loadOnChainData (_: any, refreshType: RefreshType) {
-      const address = this.$web3.eth.defaultAccount
+    async loadOnChainData({ rootGetters }: any, refreshType: RefreshType) {
+      const address = rootGetters['wallet/getAddress']
       const captainCookContract = this.$contracts.CaptainCook
+
 
       const refreshList: Pool[] = prepareRefreshList(refreshType)
       await Promise.all(refreshList.map(async (pool: Pool) => {
@@ -65,88 +66,90 @@ export default {
 
         try {
           const results = await Promise.all([
-            tokenContract.methods.balanceOf(address).call(),
-            captainCookContract.methods.userInfo(pool.pid, address).call(),
-            tokenContract.methods.balanceOf(captainCookContract._address).call(),
-            tokenContract.methods.allowance(address, captainCookContract._address).call(),
-            captainCookContract.methods.pendingSwapShip(pool.pid, address).call()
+            tokenContract.balanceOf(address),
+            captainCookContract.userInfo(pool.pid, address),
+            tokenContract.balanceOf(captainCookContract.address),
+            tokenContract.allowance(address, captainCookContract.address),
+            captainCookContract.pendingSwapShip(pool.pid, address)
           ])
 
           await Promise.all([
             Pool.update({
-              where (p: Pool) {
+              where(p: Pool) {
                 return p.pid === pool.pid
               },
               data: {
-                tokenBalance: results[0],
-                tokenStaked: results[1].amount,
-                tokenTotalStaked: results[2],
-                tokenApproved: results[3],
+                tokenBalance: results[0].toString(),
+                tokenStaked: results[1].amount.toString(),
+                tokenTotalStaked: results[2].toString(),
+                tokenApproved: results[3].toString(),
                 status: LoadingStatus.Loaded
               }
             }),
 
             Reward.update({
-              where (reward: Reward) {
+              where(reward: Reward) {
                 return reward.tokenTicker === 'SWSH' && reward.poolId === pool.pid
               },
               data: {
-                claimableInput: results[4]
+                claimableInput: results[4].toString()
               }
             })
           ])
         } catch (e) {
           if (refreshType === RefreshType.Integral || refreshType === RefreshType.Failed) {
             Pool.update({
-              data: [{
-                pid: pool.pid,
+              where(p: Pool) {
+                return p.pid === pool.pid
+              },
+              data: {
                 status: LoadingStatus.Error
-              }]
+              }
             })
           }
         }
       }))
     },
 
-    async approvePool ({ dispatch }, pool: Pool) {
-      const address = this.$web3.eth.defaultAccount
+    async approvePool({ dispatch, rootGetters }, pool: Pool) {
+      const address = rootGetters['wallet/getAddress']
       const poolTokenContract = this.$contracts[pool.tokenTicker]
       const captainCookContract = this.$contracts.CaptainCook
-      const totalSupply = await poolTokenContract.methods.totalSupply().call()
-      poolTokenContract.methods.approve(captainCookContract._address, totalSupply).send({ from: address })
-        .on('confirmation', () => {
-          dispatch('updateData', RefreshType.Update, { root: true })
-        })
+      const totalSupply = await poolTokenContract.totalSupply()
+      console.log(poolTokenContract)
+      poolTokenContract.approve(captainCookContract.address, totalSupply)
+      /* .on('confirmation', () => {
+        dispatch('updateData', RefreshType.Update, { root: true })
+      }) */
     },
 
-    stakeInPool ({ dispatch }, { pool, amount }: any) {
-      const address = this.$web3.eth.defaultAccount
+    stakeInPool({ dispatch, rootGetters }, { pool, amount }: any) {
+      const address = rootGetters['wallet/getAddress']
       const captainCookContract = this.$contracts.CaptainCook
       const adjustedAmount = this.$web3.utils.padLeft(amount, pool.token.decimals)
-      captainCookContract.methods.deposit(pool.pid, adjustedAmount).send({ from: address })
+      captainCookContract.methods.deposit(pool.pid, adjustedAmount)
         .on('confirmation', () => {
           dispatch('updateData', RefreshType.Update, { root: true })
         })
     },
 
-    withdrawAndClaimRewards ({ dispatch }, { pool, amount }: any) {
-      console.log(amount)
-      const address = this.$web3.eth.defaultAccount
+    withdrawAndClaimRewards({ dispatch, rootGetters }, { pool, amount }: any) {
+      const address = rootGetters['wallet/getAddress']
       const captainCookContract = this.$contracts.CaptainCook
       const adjustedAmount = this.$web3.utils.padLeft(amount, pool.decimals).toString()
-      captainCookContract.methods.withdraw(pool.pid, adjustedAmount).send({ from: address })
+      captainCookContract.withdraw(pool.pid, adjustedAmount, { from: address })
         .on('confirmation', () => {
           dispatch('updateData', RefreshType.Update, { root: true })
         })
     },
 
-    openGetLink (_, pool: Pool) {
+    openGetLink(_, pool: Pool) {
       Token.dispatch('openGetLink', pool.token)
     }
   },
 
   getters: {
-    getPools () {
+    getPools() {
       return Pool
         .query()
         .where('multiplier', (value: number) => { return value >= 1 })
@@ -155,7 +158,7 @@ export default {
         .all()
     },
 
-    getVaultPools () {
+    getVaultPools() {
       return Pool
         .query()
         .where('type', PoolType.VAULT)
@@ -163,7 +166,7 @@ export default {
         .all()
     },
 
-    getRegularPools () {
+    getRegularPools() {
       return Pool
         .query()
         .where('type', PoolType.LIQUIDITY)
@@ -173,7 +176,7 @@ export default {
         .all()
     },
 
-    getSuperPools () {
+    getSuperPools() {
       return Pool
         .query()
         .where('type', PoolType.LIQUIDITY)
@@ -184,7 +187,7 @@ export default {
         .all()
     },
 
-    getExpiredStakedPools () {
+    getExpiredStakedPools() {
       return Pool
         .query()
         .where('multiplier', 0)
@@ -193,7 +196,7 @@ export default {
         .all()
     },
 
-    getMultiplierTotal (_: any) {
+    getMultiplierTotal(_: any) {
       return Pool.getters('getPools').reduce((accumulator: number, pool: Pool) => {
         return accumulator + pool.multiplier
       }, 0)

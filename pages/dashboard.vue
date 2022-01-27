@@ -11,9 +11,7 @@
       <v-row>
         <!-- STAKED VALUE -->
         <v-col cols="12" md="9">
-          <span class="headline">
-            Staked Value
-          </span>
+          <span class="headline"> Staked Value </span>
           <v-skeleton-loader type="card" :loading="isLoading">
             <v-card outlined class="pa-5 card">
               <v-row v-if="$vuetify.breakpoint.smAndDown" class="vh-center">
@@ -25,7 +23,11 @@
                 <v-divider />
               </v-row>
               <v-row>
-                <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="3" class="vh-center">
+                <v-col
+                  v-if="$vuetify.breakpoint.mdAndUp"
+                  cols="3"
+                  class="vh-center"
+                >
                   <div class="display-1 font-weight-light">
                     ${{ stakedValue }}
                   </div>
@@ -35,7 +37,13 @@
                 </v-col>
                 <v-col cols="12" md="7">
                   <v-row>
-                    <v-col v-for="(token, index) in pooledTokens" :key="index" cols="12" lg="6" class="pa-0 ma-0">
+                    <v-col
+                      v-for="(token, index) in pooledTokens"
+                      :key="index"
+                      cols="12"
+                      lg="6"
+                      class="pa-0 ma-0"
+                    >
                       <v-card outlined class="ma-1">
                         <v-row class="pa-2">
                           <v-col cols="7" class="vh-center pa-0 ma-0">
@@ -63,9 +71,7 @@
 
         <!-- CLAIMABLE VALUE -->
         <v-col cols="12" md="3">
-          <span class="headline">
-            Claimable Value
-          </span>
+          <span class="headline"> Claimable Value </span>
           <v-skeleton-loader type="card" height="100%" :loading="isLoading">
             <v-card outlined class="pa-5 card vh-center" height="100%">
               <div class="display-1 font-weight-light">
@@ -81,13 +87,11 @@
       <v-row>
         <!-- TOTAL STAKED VALUE -->
         <v-col cols="12">
-          <span class="headline">
-            Total Staked Value
-          </span>
+          <span class="headline"> Total Staked Value </span>
           <v-skeleton-loader type="card" :loading="isLoading">
             <v-card outlined class="pa-5 card">
               <v-row class="vh-center">
-                <div class="display-1 font-weight-light">
+                <div class="display-1 py-5 font-weight-light">
                   ${{ totalStakedValue }}
                 </div>
               </v-row>
@@ -95,8 +99,14 @@
                 <v-divider />
               </v-row>
               <v-row>
-                <v-col v-for="(token, index) in regularTokens" :key="index" cols="12" md="4" class="pa-0 ma-0">
-                  <v-card outlined class="ma-1">
+                <v-col
+                  v-for="(token, index) in regularTokens"
+                  :key="index"
+                  cols="12"
+                  md="4"
+                  class="pa-0 ma-0"
+                >
+                  <v-card outlined class="ma-1 py-3">
                     <v-row class="pa-2">
                       <v-col cols="7" class="vh-center pa-0 ma-0">
                         <v-avatar :size="22" class="mr-1 my-1">
@@ -127,18 +137,34 @@
       </v-row>
       <v-row>
         <v-col cols="12">
-          <span class="headline">
-            Total Ecosystem Market Cap
-          </span>
-          <v-skeleton-loader type="card" :loading="isLoading" class="card-shining-legendary">
-            <v-card width="100%" height="200" class="vh-center card-legendary" :class="{'display-3': $vuetify.breakpoint.smAndUp, 'display-2': $vuetify.breakpoint.xsOnly}">
+          <span class="headline"> Total Ecosystem Market Cap </span>
+          <v-skeleton-loader
+            type="card"
+            :loading="isLoading"
+            class="card-shining-legendary"
+          >
+            <v-card
+              width="100%"
+              height="200"
+              class="vh-center card-legendary"
+              :class="{
+                'display-3': $vuetify.breakpoint.smAndUp,
+                'display-2': $vuetify.breakpoint.xsOnly,
+              }"
+            >
               ${{ totalRTCMarketCap }}
             </v-card>
           </v-skeleton-loader>
         </v-col>
       </v-row>
       <v-row>
-        <v-col v-for="(token, index) in RTCTokens" :key="index" cols="12" md="6" lg="4">
+        <v-col
+          v-for="(token, index) in RTCTokens"
+          :key="index"
+          cols="12"
+          md="6"
+          lg="4"
+        >
           <v-skeleton-loader type="card" :loading="isLoading">
             <token-data-display :token="token" />
           </v-skeleton-loader>
@@ -156,13 +182,9 @@
   >
     <div>
       <v-col cols="auto">
-        <v-row>
-          Failed to load some data necessary for the dashboard
-        </v-row>
+        <v-row> Failed to load some data necessary for the dashboard </v-row>
         <v-row class="mt-3 vh-center">
-          <v-btn @click="reloadFailedData">
-            Attempt refresh
-          </v-btn>
+          <v-btn @click="reloadFailedData"> Attempt refresh </v-btn>
         </v-row>
       </v-col>
     </div>
@@ -170,113 +192,132 @@
 </template>
 
 <script lang="ts">
-import Pool from '@/database/models/Pool'
-import Token from '@/database/models/Token'
-import BigNumber from 'bignumber.js'
+import Pool from "@/database/models/Pool";
+import Token from "@/database/models/Token";
+import BigNumber from "bignumber.js";
 
-import TokenDataDisplay from '~/components/tokens/TokenDataDisplay.vue'
+import TokenDataDisplay from "~/components/tokens/TokenDataDisplay.vue";
 
-import LoadingStatus from '~/interfaces/enums/LoadingStatus'
-import RefreshType from '~/interfaces/enums/RefreshType'
-import RegularToken from '~/database/models/RegularToken'
+import LoadingStatus from "~/interfaces/enums/LoadingStatus";
+import RefreshType from "~/interfaces/enums/RefreshType";
+import RegularToken from "~/database/models/RegularToken";
 
 export default {
-  name: 'Dashboard',
+  name: "Dashboard",
   components: {
-    TokenDataDisplay
+    TokenDataDisplay,
+  },
+  mounted() {
+    const thisRef = this;
+    window.setTimeout(function () {
+      thisRef.$store.dispatch("updateData", 1);
+    }, 2000);
   },
   computed: {
-    loadingStatus () {
-      let poolStatus: LoadingStatus = LoadingStatus.Loaded
+    loadingStatus() {
+      let poolStatus: LoadingStatus = LoadingStatus.Loaded;
       this.pools.some((pool: Pool) => {
         if (pool.isError) {
-          poolStatus = LoadingStatus.Error
-          return true
+          poolStatus = LoadingStatus.Error;
+          return true;
         } else if (pool.isLoading) {
-          poolStatus = LoadingStatus.Loading
-          return true
+          poolStatus = LoadingStatus.Loading;
+          return true;
         }
-      })
-      return poolStatus
+      });
+      return poolStatus;
     },
-    isLoading () {
-      return this.loadingStatus === LoadingStatus.Loading
+    isLoading() {
+      return this.loadingStatus === LoadingStatus.Loading;
     },
-    isError () {
-      return this.loadingStatus === LoadingStatus.Error
+    isError() {
+      return this.loadingStatus === LoadingStatus.Error;
     },
 
-    formatValue () {
+    formatValue() {
       return (value, decimals, precision = 4) => {
-        return new BigNumber(value).shiftedBy(-decimals).toPrecision(precision)
-      }
+        return new BigNumber(value).shiftedBy(-decimals).toPrecision(precision);
+      };
     },
-    formatPrice () {
+    formatPrice() {
       return (price, decimals) => {
-        return `$${new BigNumber(price).toFormat(decimals)}`
-      }
+        return `$${new BigNumber(price).toFormat(decimals)}`;
+      };
     },
 
-    pools () {
-      return Pool.getters('getPools')
+    pools() {
+      return Pool.getters("getPools");
     },
-    regularTokens () {
-      return Token.getters('getRegularTokens')
+    regularTokens() {
+      return Token.getters("getRegularTokens");
     },
-    pooledTokens () {
-      return Token.getters('getPooledTokens')
+    pooledTokens() {
+      return Token.getters("getPooledTokens");
     },
-    claimableTokens () {
-      return []
-    },
-
-    RTCTokens () {
-      return Token.getters('getRTCTokens')
-    },
-    totalRTCMarketCap () {
-      const value = this.RTCTokens.reduce((accumulator: BigNumber, token: RegularToken) => {
-        return accumulator.plus(token.marketCap)
-      }, new BigNumber('0'))
-      return value.toFormat(0)
+    claimableTokens() {
+      return [];
     },
 
-    stakedValue () {
+    RTCTokens() {
+      return Token.getters("getRTCTokens");
+    },
+    totalRTCMarketCap() {
+      const value = this.RTCTokens.reduce(
+        (accumulator: BigNumber, token: RegularToken) => {
+          return accumulator.plus(token.marketCap);
+        },
+        new BigNumber("0")
+      );
+      return value.toFormat(0);
+    },
+
+    stakedValue() {
       const value = this.pools.reduce((accumulator: BigNumber, pool: Pool) => {
-        return accumulator.plus(pool.stakedValue)
-      }, new BigNumber('0'))
-      return value.toFormat(1)
+        return accumulator.plus(pool.stakedValue);
+      }, new BigNumber("0"));
+      return value.toFormat(1);
     },
 
-    claimableValue () {
+    claimableValue() {
       const value = this.pools.reduce((accumulator: BigNumber, pool: Pool) => {
-        return accumulator.plus(pool.claimableValue)
-      }, new BigNumber('0'))
-      return value.toFormat(2)
+        return accumulator.plus(pool.claimableValue);
+      }, new BigNumber("0"));
+      return value.toFormat(2);
     },
 
-    totalStakedValue () {
+    totalStakedValue() {
       const value = this.pools.reduce((accumulator: BigNumber, pool: Pool) => {
-        return accumulator.plus(pool.totalStakedValue)
-      }, new BigNumber('0'))
-      return value.toFormat(0)
-    }
+        return accumulator.plus(pool.totalStakedValue);
+      }, new BigNumber("0"));
+      return value.toFormat(0);
+    },
   },
   methods: {
-    reloadFailedData () {
-      this.$store.dispatch('updateData', RefreshType.Failed)
-    }
-  }
-}
+    reloadFailedData() {
+      this.$store.dispatch("updateData", RefreshType.Failed);
+    },
+  },
+};
 </script>
 
 <style scoped>
 .card {
-  background: rgb(31,30,54);
-  background: linear-gradient(90deg, rgba(30,32,37,1) 0%, rgba(31,30,54,0.7) 50%, rgba(30,32,37,1) 100%);
+  background: rgb(31, 30, 54);
+  background: linear-gradient(
+    90deg,
+    rgba(30, 32, 37, 1) 0%,
+    rgba(31, 30, 54, 0.7) 50%,
+    rgba(30, 32, 37, 1) 100%
+  );
 }
 
 .card-legendary {
-  background: rgb(99,95,68);
-  background: linear-gradient(90deg, rgba(30,32,37,1) 0%, rgba(99,95,68,0.5) 50%, rgba(30,32,37,1) 100%);
+  background: rgb(99, 95, 68);
+  background: linear-gradient(
+    90deg,
+    rgba(30, 32, 37, 1) 0%,
+    rgba(99, 95, 68, 0.5) 50%,
+    rgba(30, 32, 37, 1) 100%
+  );
 }
 </style>

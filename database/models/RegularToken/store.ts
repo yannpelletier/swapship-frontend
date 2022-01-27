@@ -3,7 +3,7 @@ import tokenData, { SwapIdType } from '~/lists/tokens'
 
 export default {
   actions: {
-    injectTokens (_: any) {
+    injectTokens(_: any) {
       RegularToken.insert({
         data: [
           ...Object.keys(tokenData).map((ticker) => {
@@ -17,8 +17,8 @@ export default {
       })
     },
 
-    buyOnUniswap (_, token: RegularToken) {
-      const contractAddress = this.$contracts[token.ticker]._address
+    buyOnUniswap(_, token: RegularToken) {
+      const contractAddress = this.$contracts[token.ticker].address
       const tokenSwapId = token.swapIdType === SwapIdType.Contract ? contractAddress : token.ticker
       window.open(`https://app.uniswap.org/#/swap?outputCurrency=${tokenSwapId}`)
     }
